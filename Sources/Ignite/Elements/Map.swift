@@ -43,29 +43,26 @@ public struct Map: BlockElement, LazyLoadable {
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
-        let mapScript = """
-        <div id="map" style="width: 100%; height: 400px;"></div>
-        <script>
-        mapkit.init({
-            authorizationCallback: function(done) {
-                done('YOUR_JWT_TOKEN');
-            }
-        });
+        // Permissions for the iframe.
+        let allowPermissions = """
+            accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share
+            """
         
-        var map = new mapkit.Map("map");
-        var coordinate = new mapkit.Coordinate(37.7749, -122.4194); // Example coordinates (San Francisco)
-        var annotation = new mapkit.MarkerAnnotation(coordinate, { title: "\(title)" });
-        map.showItems([annotation]);
-        </script>
-        """
+        if attributes.classes.contains("ratio") == false {
+            context.addWarning("""
+            Embedding \(url) without an aspect ratio will cause it to appear very small. \
+            It is recommended to use aspectRatio() so it can scale automatically.
+            """)
+        }
         
         return Group {
-            Script(code: mapScript).render(context: context)
+            #"<iframe src="\#(url)" title="\#(title)" allow="\#(allowPermissions)" style="width: 100%; height: 100%; border: none;"></iframe>"#
         }
         .attributes(attributes)
         .render(context: context)
     }
 }
+
 
 /*
 
