@@ -35,9 +35,6 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     
     /// How many columns this should occupy when placed in a section.
     public var columnWidth = ColumnWidth.automatic
-//    
-//    /// The external file to load.
-//    private var file: String?
     
     /// Direct, inline JavaScript code to execute.
     private var code: String?
@@ -48,7 +45,7 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// Direct, inline JavaScript code to execute.
     private var token: String?
     
-    var item: any PageElement
+//    var item: any PageElement
     
 //    /// Creates a new script that references an external file.
 //    /// - Parameter file: The URL of the file to load.
@@ -63,9 +60,8 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
 //    }
     
     /// Embeds some custom, inline JavaScript on this page.
-    public init(code: String, @PageElementBuilder _ item: () -> Item) {
+    public init(code: String) {
         self.code = code
-        self.item = item()
     }
     
     /// Renders this element using publishing context passed in.
