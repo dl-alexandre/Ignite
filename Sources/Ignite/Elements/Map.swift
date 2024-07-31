@@ -72,29 +72,6 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
         
         
         return Group {
-            """
-        
-        <!DOCTYPE html>
-        <html>
-        <head>
-        
-        <meta charset="utf-8">
-            
-            <style>
-                #map-container {
-                    width: 100%;
-                    height: 600px;
-                }
-            </style>
-        </head>
-        
-        <body>
-        <div id="map-container"></div>
-        </body>
-        </html>
-        
-        """
-            
             Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
                 .addCustomAttribute(name: "crossorigin", value: "anonymous")
                 .addCustomAttribute(name: "async", value: "async")
@@ -135,6 +112,23 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
         """
             )
             .addCustomAttribute(name: "type", value: "module")
+            
+            
+            """
+        
+            
+                <style>
+                    #map-container {
+                        width: 100%;
+                        height: 600px;
+                    }
+                </style>
+        
+        
+                    <div id="map-container"></div>
+               
+        
+        """
         }
         .id("map-container")
         .attributes(attributes)
@@ -154,6 +148,7 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
 //        }
     }
 }
+
 
 
 /*
