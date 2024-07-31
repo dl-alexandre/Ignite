@@ -112,6 +112,7 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
             .addCustomAttribute(name: "type", value: "module")
         }
         .id("map-container")
+        .attributes(attributes)
         .render(context: context)
         
 //        return output
