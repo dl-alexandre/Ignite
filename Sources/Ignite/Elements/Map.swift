@@ -46,11 +46,10 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     private var token: String?
     
     /// The content to place inside the text.
-    var content: [InlineElement]
     
     /// Embeds some custom, inline JavaScript on this page.
-    public init(@InlineElementBuilder content: () -> [InlineElement]) {
-        self.content = content()
+    public init() {
+       
     }
     
     /// Renders this element using publishing context passed in.
@@ -58,7 +57,6 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
         return Group {
-            content.render(context: context)
             Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
                 .addCustomAttribute(name: "crossorigin", value: "anonymous")
                 .addCustomAttribute(name: "async", value: "async")
