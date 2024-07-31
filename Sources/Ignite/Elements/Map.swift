@@ -69,17 +69,38 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
         
-        Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
-            .addCustomAttribute(name: "crossorigin", value: "anonymous")
-            .addCustomAttribute(name: "async", value: "async")
-            .data("callback", "initMapKit")
-            .data("libraries", "map")
-            .data("token", "eyJraWQiOiJSNzgzRjNIOE05IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiIyTVA4UVdLN1I2IiwiaWF0IjoxNzIxODU1OTU0LCJleHAiOjE3MjI0OTU1OTl9.ViD505SG9QW54fv5h3iv9lQsY328OlHF-1mEPdFeNzRmqrRI137IaXlGXr2W5lR9brWG7Luej1SoEyr8beXsjw")
+        
         
         return Group {
+            """
+        
+        <!DOCTYPE html>
+        <html>
+        <head>
+        
+        <meta charset="utf-8">
             
+            <style>
+                #map-container {
+                    width: 100%;
+                    height: 600px;
+                }
+            </style>
+        </head>
+        
+        <body>
+        <div id="map-container"></div>
+        </body>
+        </html>
+        
+        """
             
-            
+            Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
+                .addCustomAttribute(name: "crossorigin", value: "anonymous")
+                .addCustomAttribute(name: "async", value: "async")
+                .data("callback", "initMapKit")
+                .data("libraries", "map")
+                .data("token", "eyJraWQiOiJSNzgzRjNIOE05IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiIyTVA4UVdLN1I2IiwiaWF0IjoxNzIxODU1OTU0LCJleHAiOjE3MjI0OTU1OTl9.ViD505SG9QW54fv5h3iv9lQsY328OlHF-1mEPdFeNzRmqrRI137IaXlGXr2W5lR9brWG7Luej1SoEyr8beXsjw")
             
             Script(code:
         """
