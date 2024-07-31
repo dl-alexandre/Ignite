@@ -112,22 +112,8 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
         """
             )
             .addCustomAttribute(name: "type", value: "module")
-            
-            
             """
-        
-            
-                <style>
-                    #map-container {
-                        width: 100%;
-                        height: 600px;
-                    }
-                </style>
-        
-        
-                    <div id="map-container"></div>
-               
-        
+                <div id="map-container"></div>
         """
         }
         .id("map-container")
