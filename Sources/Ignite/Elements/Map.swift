@@ -69,7 +69,6 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
         return Group {
-            item
             Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
                 .addCustomAttribute(name: "crossorigin", value: "anonymous")
                 .addCustomAttribute(name: "async", value: "async")
