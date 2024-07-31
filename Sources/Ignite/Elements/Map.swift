@@ -45,23 +45,12 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// Direct, inline JavaScript code to execute.
     private var token: String?
     
-//    var item: any PageElement
-    
-//    /// Creates a new script that references an external file.
-//    /// - Parameter file: The URL of the file to load.
-//    public init(file: String) {
-//        self.file = file
-//    }
-//    
-//    /// Creates a new script that references an external file.
-//    /// - Parameter file: The URL of the file to load.
-//    public init(file: URL) {
-//        self.file = file.absoluteString
-//    }
+    /// The content to place inside the text.
+    var content: [InlineElement]
     
     /// Embeds some custom, inline JavaScript on this page.
-    public init(code: String) {
-        self.code = code
+    public init(@InlineElementBuilder content: () -> [InlineElement]) {
+        self.content = content()
     }
     
     /// Renders this element using publishing context passed in.
@@ -69,6 +58,7 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
         return Group {
+            content.render(context: context)
             Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
                 .addCustomAttribute(name: "crossorigin", value: "anonymous")
                 .addCustomAttribute(name: "async", value: "async")
