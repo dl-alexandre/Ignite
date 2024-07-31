@@ -7,59 +7,125 @@
 
 import Foundation
 
+enum MapLibrary {
+    case map, fullmap, annotations, services, overlays, geojson
+    
+    var libraryString: String {
+        switch self {
+            case .map: 
+                return "map"
+            case .fullmap:
+                return "full-map"
+            case .annotations:
+                return "annotations"
+            case .services:
+                return "services"
+            case .overlays:
+                return "overlays"
+            case .geojson:
+                return "geojson"
+        }
+    }
+}
+
 /// Embeds a MapKit JS map.
-public struct Map: BlockElement, LazyLoadable {
+public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
     
     /// How many columns this should occupy when placed in a section.
     public var columnWidth = ColumnWidth.automatic
     
-    /// The URL for the MapKit JS map.
-    let url: String
+    /// The external file to load.
+    private var file: String?
     
-    /// A title that describes this content.
-    let title: String
+    /// Direct, inline JavaScript code to execute.
+    private var code: String?
     
-    /// Creates a new `Map` instance from the title and URL provided.
-    /// - Parameters:
-    ///   - title: A title suitable for screen readers.
-    ///   - url: The URL to embed on your page.
-    public init(title: String, url: URL) {
-        self.url = url.absoluteString
-        self.title = title
+    /// The external file to load.
+    private var library: MapLibrary?
+    
+    /// Direct, inline JavaScript code to execute.
+    private var token: String?
+    
+    /// Creates a new script that references an external file.
+    /// - Parameter file: The URL of the file to load.
+    public init(file: String) {
+        self.file = file
     }
     
-    /// Creates a new `Map` instance from the title and URL provided.
-    /// - Parameters:
-    ///   - title: A title suitable for screen readers.
-    ///   - url: The URL to embed on your page.
-    public init(title: String, url: String) {
-        self.url = url
-        self.title = title
+    /// Creates a new script that references an external file.
+    /// - Parameter file: The URL of the file to load.
+    public init(file: URL) {
+        self.file = file.absoluteString
     }
     
-    /// Renders this element using the publishing context passed in.
+    /// Embeds some custom, inline JavaScript on this page.
+    public init(code: String) {
+        self.code = code
+    }
+    
+    /// Renders this element using publishing context passed in.
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
-        // Permissions for the iframe.
-        let allowPermissions = """
-            accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share
-            """
-        
-        if attributes.classes.contains("ratio") == false {
-            context.addWarning("""
-            Embedding \(url) without an aspect ratio will cause it to appear very small. \
-            It is recommended to use aspectRatio() so it can scale automatically.
-            """)
-        }
-        
         return Group {
-            #"<iframe src="\#(url)" title="\#(title)" allow="\#(allowPermissions)" style="width: 100%; height: 100%; border: none;"></iframe>"#
+            Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
+                .addCustomAttribute(name: "crossorigin", value: "anonymous")
+                .addCustomAttribute(name: "async", value: "async")
+                .data("callback", "initMapKit")
+                .data("libraries", "map")
+                .data("token", "eyJraWQiOiJSNzgzRjNIOE05IiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiIyTVA4UVdLN1I2IiwiaWF0IjoxNzIxODU1OTU0LCJleHAiOjE3MjI0OTU1OTl9.ViD505SG9QW54fv5h3iv9lQsY328OlHF-1mEPdFeNzRmqrRI137IaXlGXr2W5lR9brWG7Luej1SoEyr8beXsjw")
+            
+            Script(code:
+        """
+            // Wait for MapKit JS to be ready to use.
+                const setupMapKitJs = async() => {
+                    // If MapKit JS is not yet loaded...
+                    if (!window.mapkit || window.mapkit.loadedLibraries.length === 0) {
+                        // ...await <script>'s data-callback (window.initMapKit).
+                        await new Promise(resolve => { window.initMapKit = resolve });
+                        // Clean up.
+                        delete window.initMapKit;
+                    }
+                };
+                
+                /**
+                 * Script Entry Point
+                 */
+                const main = async() => {
+                    await setupMapKitJs();
+                    
+                    const cupertino = new mapkit.CoordinateRegion(
+                                                                  new mapkit.Coordinate(37.3316850890998, -122.030067374026),
+                                                                  new mapkit.CoordinateSpan(0.167647972, 0.354985255)
+                                                                  );
+                                                                  
+                                                                  // Create a map in the element whose ID is "map-container".
+                                                                  const map = new mapkit.Map("map-container");
+                                                                  map.region = cupertino;
+                };
+                
+                main();
+        """
+            )
+            .addCustomAttribute(name: "type", value: "module")
         }
-        .attributes(attributes)
+        .id("map-container")
         .render(context: context)
+        
+//        return output
+//        if let file {
+//            return "<script\(attributes.description) src=\"\(context.site.url.path)\(file)\"></script>"
+//        } else if let code {
+//            return "<script\(attributes.description)>\(code)</script>"
+//        } else {
+//            context.addWarning("""
+//            Creating a script with no source or code should not be possible. \
+//            Please file a bug report on the Ignite project.
+//            """)
+//            return ""
+//        }
     }
 }
 
