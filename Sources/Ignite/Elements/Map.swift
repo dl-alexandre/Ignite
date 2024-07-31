@@ -35,9 +35,9 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     
     /// How many columns this should occupy when placed in a section.
     public var columnWidth = ColumnWidth.automatic
-    
-    /// The external file to load.
-    private var file: String?
+//    
+//    /// The external file to load.
+//    private var file: String?
     
     /// Direct, inline JavaScript code to execute.
     private var code: String?
@@ -48,23 +48,24 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// Direct, inline JavaScript code to execute.
     private var token: String?
     
-    var item: Item?
+    var item: any PageElement
     
-    /// Creates a new script that references an external file.
-    /// - Parameter file: The URL of the file to load.
-    public init(file: String) {
-        self.file = file
-    }
-    
-    /// Creates a new script that references an external file.
-    /// - Parameter file: The URL of the file to load.
-    public init(file: URL) {
-        self.file = file.absoluteString
-    }
+//    /// Creates a new script that references an external file.
+//    /// - Parameter file: The URL of the file to load.
+//    public init(file: String) {
+//        self.file = file
+//    }
+//    
+//    /// Creates a new script that references an external file.
+//    /// - Parameter file: The URL of the file to load.
+//    public init(file: URL) {
+//        self.file = file.absoluteString
+//    }
     
     /// Embeds some custom, inline JavaScript on this page.
-    public init(code: String) {
+    public init(code: String, @PageElementBuilder _ item: () -> Item) {
         self.code = code
+        self.item = item()
     }
     
     /// Renders this element using publishing context passed in.
@@ -72,7 +73,7 @@ public struct Map: BlockElement, InlineElement, LazyLoadable {
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
         return Group {
-            item!
+            item
             Script(file: "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.core.js")
                 .addCustomAttribute(name: "crossorigin", value: "anonymous")
                 .addCustomAttribute(name: "async", value: "async")
